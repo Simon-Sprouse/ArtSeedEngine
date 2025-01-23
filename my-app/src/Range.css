@@ -1,0 +1,35 @@
+.slider-container { 
+    position: relative;
+    width: 100%;
+    height: 40px;
+    margin: 20px, 0;
+}
+
+.slider-track { 
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: white;
+    transform: translateY(-50%);
+}
+
+.thumb { 
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    background: yellow;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+}
+
+.thumb.lBound { 
+    background: red;
+}
+
+.thumb.rBound { 
+    background: blue;
+}
