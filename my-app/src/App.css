@@ -1,0 +1,21 @@
+.App {
+    text-align: center;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+}
+
+.sidebar { 
+    flex: 0 0 33%;
+    background-color: gray;
+    padding: 20px;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+canvas { 
+    border: 1px solid white;
+}

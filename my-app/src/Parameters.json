@@ -1,0 +1,65 @@
+{
+    "settings": {
+        "xPos": {
+            "input": {
+                "type": "range",
+                "min": 0,
+                "max": 800,
+                "lBound": 0,
+                "rBound": 800,
+                "scale": "linear"
+            },
+            "pos": 42,
+            "oscilators": ["A"],
+            "randomizers": [1]
+        },
+        "yPos": {
+            "input": {
+                "type": "range",
+                "min": 0,
+                "max": 400,
+                "lBound": 0,
+                "rBound": 400,
+                "scale": "linear"
+            },
+            "pos": 42,
+            "oscilators": ["B"],
+            "randomizers": [1]
+        },
+        "size": {
+            "input": {
+                "type": "range",
+                "min": 0,
+                "max": 100,
+                "lBound": 0,
+                "rBound": 100,
+                "scale": "linear"
+            },
+            "pos": 42,
+            "oscilators": ["A"],
+            "randomizers": [1]
+        }
+    },
+    "oscilators": {
+        "A": {
+            "movement": { 
+                "type": "random",
+                "step": 12
+            },
+            "pos": 30
+        },
+        "B": {
+            "movement": { 
+                "type": "random",
+                "step": 12
+            },
+            "pos": 30
+        }
+    },
+    "randomizers": {
+        "1": {
+            "step": 0,
+            "key": "1"
+        }
+    }
+}
