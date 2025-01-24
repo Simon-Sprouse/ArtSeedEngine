@@ -15,6 +15,8 @@
     transform: translateY(-50%);
 }
 
+
+
 .thumb { 
     position: absolute;
     top: 50%;
@@ -28,8 +30,25 @@
 
 .thumb.lBound { 
     background: red;
+    color: red
 }
 
 .thumb.rBound { 
     background: blue;
+    color: blue
 }
+
+.thumb.pos { 
+    background: yellow;
+    color: yellow;
+}
+
+.thumb-value { 
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translate(-50%);
+    font-size: 12px;
+    font-weight: bold;
+}
+
