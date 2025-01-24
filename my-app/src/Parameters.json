@@ -1,7 +1,8 @@
 {
+    "engine": "plotter",
     "settings": {
         "xPos": {
-            "input": "CustomRange",
+            "input": "CustomRange", 
             "min": 0,
             "max": 800,
             "lBound": 0,
@@ -12,7 +13,6 @@
             "randomizers": [1]
         },
         "yPos": {
-
             "input": "CustomRange",
             "min": 0,
             "max": 400,

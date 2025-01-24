@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import CustomRange from './CustomRange';
 
-import Parameters from './Parameters.json'
 
-function SideBar() { 
+function SideBar({ parameters, setParameters }) { 
 
-
-    const [parameters, setParameters] = useState(Parameters);
 
     function handleChange(key, item, updatedValue) {
 
@@ -24,16 +21,12 @@ function SideBar() {
         });
     }
 
-
-
     return (
         <div className="sideBar">
             <h1>Seed Engine</h1>
-            {Object.keys(parameters.settings).map(key => {
+            {Object.entries(parameters.settings).map(([key, values]) => {
                 // keys: xPos, yPos, size ...
-                // values: {input, min, max, lBound, rBound, pos, ... scale ...}
-                const values = parameters.settings[key];
-
+                // values: {input, min, max, lBound, rBound, pos, ... scale ... }
 
                 if (values.input == "CustomRange") { 
                     return (
@@ -50,8 +43,6 @@ function SideBar() {
                         </div>
                     )
                 };
-
-
 
             })}
         </div>
