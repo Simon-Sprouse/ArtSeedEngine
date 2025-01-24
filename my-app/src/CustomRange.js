@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react';
 import './Range.css';
 
-function Range({ min, max, lBound, rBound, pos, onChange }) {
+function CustomRange({ min, max, lBound, rBound, pos, onChange }) {
+
     const [dragging, setDragging] = useState(null);
     const [sliderRect, setSliderRect] = useState(null);
     const [initialMousePos, setInitialMousePos] = useState(0);
     const [initialThumbPos, setInitialThumbPos] = useState(0);
 
-    // Log function to help with debugging
-    function logState() {
-        console.log("lBound:", lBound, "rBound:", rBound, "pos:", pos);
-    }
-
     function handleMouseDown(type, event) {
+
         setDragging(type);
         
         const rect = event.target.closest(".slider-container").getBoundingClientRect();
@@ -22,7 +19,6 @@ function Range({ min, max, lBound, rBound, pos, onChange }) {
         const thumbPosition = event.target.getBoundingClientRect().left - rect.left;
         setInitialThumbPos(thumbPosition);
 
-        logState(); // Log to verify initial values
     }
 
     function handleMouseUp() {
@@ -39,39 +35,27 @@ function Range({ min, max, lBound, rBound, pos, onChange }) {
         const newValue = min + ((movement + initialThumbPos) / sliderRect.width) * (max - min);
 
         if (dragging === "lBound") {
-            const newLBound = Math.min(Math.max(newValue, min), rBound - 1);
-            // Log before calling onChange to ensure it's firing
-            console.log("Moving lBound:", newLBound);
-            // onChange({ lBound: newLBound, pos: Math.max(pos, newLBound) });
 
+            const newLBound = Math.min(Math.max(newValue, min), rBound - 1);
             onChange(newLBound, "lBound");
             onChange(Math.max(pos, newLBound), "pos");
 
-
-
         } else if (dragging === "rBound") {
-            const newRBound = Math.max(Math.min(newValue, max), lBound + 1);
-            // Log before calling onChange to ensure it's firing
-            console.log("Moving rBound:", newRBound);
-            // onChange({ rBound: newRBound, pos: Math.min(pos, newRBound) });
 
+            const newRBound = Math.max(Math.min(newValue, max), lBound + 1);
             onChange(newRBound, "rBound");
             onChange(Math.min(pos, newRBound), "pos");
 
 
         } else if (dragging === "pos") {
+
             const newPos = Math.max(Math.min(newValue, rBound), lBound);
-            // Log before calling onChange to ensure it's firing
-            console.log("Moving pos:", newPos);
-            // onChange({ pos: newPos });
-
-
             onChange(newPos, "pos");
-        }
 
-        logState(); // Log after each move to verify the update
+        }
     }
 
+    // allow free-drag across document
     useEffect(() => {
         if (dragging) {
             document.addEventListener('mousemove', handleMouseMove);
@@ -94,7 +78,8 @@ function Range({ min, max, lBound, rBound, pos, onChange }) {
     return (
         <div className="slider-container">
             <div className="slider-track">
-                {/* Left bound thumb */}
+
+                {/* lBound thumb */}
                 <div
                     className="thumb lBound"
                     style={{ left: `${calculatePosition(lBound)}%` }}
@@ -105,7 +90,7 @@ function Range({ min, max, lBound, rBound, pos, onChange }) {
                     </div>
                 </div>
 
-                {/* Right bound thumb */}
+                {/* rBound thumb */}
                 <div
                     className="thumb rBound"
                     style={{ left: `${calculatePosition(rBound)}%` }}
@@ -116,7 +101,7 @@ function Range({ min, max, lBound, rBound, pos, onChange }) {
                     </div>
                 </div>
 
-                {/* Pos thumb */}
+                {/* pos thumb */}
                 <div
                     className="thumb pos"
                     style={{ left: `${calculatePosition(pos)}%` }}
@@ -131,4 +116,4 @@ function Range({ min, max, lBound, rBound, pos, onChange }) {
     );
 }
 
-export default Range;
+export default CustomRange;

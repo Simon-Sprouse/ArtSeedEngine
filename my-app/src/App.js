@@ -11,7 +11,6 @@ function App() {
         </div>
         
         <div className="main-content">
-            <h1>Seed Engine</h1>
             <Canvas />
         </div>
 

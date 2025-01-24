@@ -1,7 +1,7 @@
 {
     "settings": {
         "xPos": {
-            "input": "range",
+            "input": "CustomRange",
             "min": 0,
             "max": 800,
             "lBound": 0,
@@ -13,7 +13,7 @@
         },
         "yPos": {
 
-            "input": "range",
+            "input": "CustomRange",
             "min": 0,
             "max": 400,
             "lBound": 0,
@@ -24,7 +24,7 @@
             "randomizers": [1]
         },
         "size": {
-            "input": "range",
+            "input": "CustomRange",
             "min": 0,
             "max": 100,
             "lBound": 0,

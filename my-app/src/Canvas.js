@@ -16,6 +16,7 @@ function Canvas() {
 
     return (
         <div>
+            <h1>Stats</h1>
             <canvas ref={canvasRef} width="800" height="400" />
         </div>
     )
