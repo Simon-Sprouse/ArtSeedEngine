@@ -8,9 +8,7 @@
             "lBound": 0,
             "rBound": 800,
             "scale": "linear",
-            "pos": 42,
-            "oscilators": ["A"],
-            "randomizers": [1]
+            "pos": 42
         },
         "yPos": {
             "input": "CustomRange",
@@ -19,9 +17,7 @@
             "lBound": 0,
             "rBound": 400,
             "scale": "linear",
-            "pos": 42,
-            "oscilators": ["B"],
-            "randomizers": [1]
+            "pos": 42
         },
         "size": {
             "input": "CustomRange",
@@ -30,25 +26,22 @@
             "lBound": 0,
             "rBound": 100,
             "scale": "linear",
-            "pos": 42,
-            "oscilators": ["A"],
-            "randomizers": [1]
+            "pos": 42
         }
     },
     "oscilators": {
         "A": {
-            "movement": { 
-                "type": "random",
-                "step": 12
-            },
-            "pos": 30
+            "type": "loop",
+            "step": 4,
+            "pos": 30,
+            "attatchedTo": ["xPos", "yPos"]
         },
         "B": {
-            "movement": { 
-                "type": "random",
-                "step": 12
-            },
-            "pos": 30
+            "type": "random",
+            "step": 12,
+            "pos": 30,
+            "attatchedTo": []
+
         }
     },
     "randomizers": {

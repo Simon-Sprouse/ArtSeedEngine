@@ -16,36 +16,10 @@ function Canvas({ parameters, setParameters }) {
 
     return (
         <div>
-            <h1>Stats</h1>
+            <h1>Canvas</h1>
             <canvas ref={canvasRef} width="800" height="400" />
 
-            {/* SEED */}
-            <h1>SEED</h1>
-            <p>{parameters.engine}</p>
-            {Object.entries(parameters.settings).map(([key, values]) => (
-                <p>
-                    {key + " "} 
-                    {values.lBound + " "}
-                    {values.rBound + " "}
-                    {values.scale + " "} 
-                </p>
-            ))}
-            {Object.entries(parameters.oscilators).map(([key, values]) => (
-                <p>
-                    {key} 
-                    {JSON.stringify(values.movement, null, 2)}
-                </p>
-            ))}
-
-
-            {/* STATE */}
-            <h1>STATE</h1>
-            {Object.entries(parameters.settings).map(([key, values]) => (
-                <p>{key}: {values.pos}</p>
-            ))}
-            {Object.entries(parameters.oscilators).map(([key, values]) => (
-                <p>{key}: {values.pos}</p>
-            ))}
+            
 
 
 
