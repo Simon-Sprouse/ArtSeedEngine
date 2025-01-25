@@ -37,20 +37,20 @@ function CustomRange({ min, max, lBound, rBound, pos, onChange }) {
         if (dragging === "lBound") {
 
             const newLBound = Math.min(Math.max(newValue, min), rBound - 1);
-            onChange(newLBound, "lBound");
-            onChange(Math.max(pos, newLBound), "pos");
+            onChange("lBound", newLBound);
+            onChange("pos", Math.max(pos, newLBound));
 
         } else if (dragging === "rBound") {
 
             const newRBound = Math.max(Math.min(newValue, max), lBound + 1);
-            onChange(newRBound, "rBound");
-            onChange(Math.min(pos, newRBound), "pos");
+            onChange("rBound", newRBound);
+            onChange("pos", Math.min(pos, newRBound));
 
 
         } else if (dragging === "pos") {
 
             const newPos = Math.max(Math.min(newValue, rBound), lBound);
-            onChange(newPos, "pos");
+            onChange("pos", newPos);
 
         }
     }

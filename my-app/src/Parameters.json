@@ -34,13 +34,13 @@
             "type": "loop",
             "step": 4,
             "pos": 30,
-            "attatchedTo": ["xPos", "yPos"]
+            "attachedTo": ["xPos", "yPos"]
         },
         "B": {
             "type": "random",
             "step": 12,
             "pos": 30,
-            "attatchedTo": []
+            "attachedTo": ["size"]
 
         }
     },

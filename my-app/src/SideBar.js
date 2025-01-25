@@ -3,24 +3,10 @@ import { useState } from 'react';
 import CustomRange from './CustomRange';
 import Oscilator from './Oscilator';
 
-function SideBar({ parameters, setParameters }) { 
+function SideBar({ parameters, handleChange }) { 
 
 
-    function handleChange(category, key, item, updatedValue) {
-
-        setParameters(prevState => {
-
-            // deep copy for immutability
-            const newCategory = { ...prevState[category] };
-            newCategory[key][item] = updatedValue
-    
-            // Return the new state
-            return {
-                ...prevState,
-                [category]: newCategory,
-            };
-        });
-    }
+   
 
     return (
         <div className="sideBar">
@@ -28,43 +14,46 @@ function SideBar({ parameters, setParameters }) {
             <h1>Seed Engine</h1>
 
             <h2>Settings</h2>
-            {Object.entries(parameters.settings).map(([key, values]) => {
+            {Object.entries(parameters.settings).map(([dimension, traits]) => {
                 // category: settings
-                // keys: xPos, yPos, size ...
-                // values: {input, min, max, lBound, rBound, pos, ... scale ... }
+                // dimensions: xPos, yPos, size ...
+                // traits: {input, min, max, lBound, rBound, pos, ... scale ... }
 
-                if (values.input == "CustomRange") { 
+
+                console.log("Rendering dimension:", dimension);
+                if (traits.input == "CustomRange") { 
                     return (
-                        <div key={key} className="range-item">
-                            <p>{key}</p>
+                        <div key={dimension} className="range-item">
+                            <p>{dimension}</p>
                             <CustomRange 
-                                min={values.min}
-                                max={values.max}
-                                lBound={values.lBound}
-                                rBound={values.rBound}
-                                pos={values.pos}
-                                onChange={(updatedValues, item) => handleChange("settings", key, item, updatedValues)} // key: xPos, item: lBound
+                                min={traits.min}
+                                max={traits.max}
+                                lBound={traits.lBound}
+                                rBound={traits.rBound}
+                                pos={traits.pos}
+                                onChange={(trait, newValue) => handleChange("settings", dimension, trait, newValue)} // trait: lBound
                             />
                         </div>
                     )
-                };
+                }
+                return null;
             })}
 
 
             <h2>Oscilators</h2>
-            {Object.entries(parameters.oscilators).map(([key, values]) => {
+            {Object.entries(parameters.oscilators).map(([oscilator, traits]) => {
                 // category: oscilators
-                // keys: A, B ...
-                // values: {type, step, attachedTo, ... pos ... }
+                // oscilators: A, B ...
+                // traits: {type, step, attachedTo, ... pos ... }
 
-
+                console.log("Rendering oscillator:", oscilator);
                 // no if statement, I can assume all oscilators use the same component
                 return (
-                    <div key={key} className="range-item">
-                        <p>{key}</p>
+                    <div key={oscilator} className="range-item">
+                        <p>{oscilator}</p>
                         <Oscilator
-                            pos={values.pos}
-                            onChange={(updatedValues, item) => handleChange("oscilators", key, item, updatedValues)} // key: xPos, item: lBound
+                            pos={traits.pos}
+                            onChange={(trait, newValue) => handleChange("oscilators", oscilator, trait, newValue)} // trait: lBound
                         />
                     </div>
                 )

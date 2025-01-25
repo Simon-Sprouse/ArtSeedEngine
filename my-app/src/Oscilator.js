@@ -35,7 +35,7 @@ function Oscillator({ pos, onChange }) {
         const newValue = min + ((movement + initialThumbPos) / sliderRect.width) * (max - min);
 
         const newPos = Math.max(Math.min(newValue, max), min);
-        onChange(newPos, 'pos');
+        onChange("pos", newPos);
     }
 
     // allow free-drag across document

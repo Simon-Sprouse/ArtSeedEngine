@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 
-function Canvas({ parameters, setParameters }) {
+function Canvas({ parameters }) {
 
     const canvasRef = useRef(null);
 

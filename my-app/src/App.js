@@ -13,16 +13,33 @@ function App() {
 
     const [parameters, setParameters] = useState(Parameters);
 
+    // change parameters leaf, one at a time
+    function handleChange(category, key, item, updatedValue) {
+
+        setParameters(prevState => {
+
+            // deep copy for immutability
+            const newCategory = { ...prevState[category] };
+            newCategory[key][item] = updatedValue
+    
+            // Return the new state
+            return {
+                ...prevState,
+                [category]: newCategory,
+            };
+        });
+    }
+
     return (
         <div className="App">
         
             <div className="sidebar">
-                <SideBar parameters={parameters} setParameters={setParameters}/>
+                <SideBar parameters={parameters} handleChange={handleChange}/>
             </div>
             
             <div className="main-content">
-                <Canvas parameters={parameters} setParameters={setParameters}/>
-                <Metronome />
+                <Canvas parameters={parameters}/>
+                <Metronome parameters={parameters} setParameters={setParameters}/>
 
 
 
