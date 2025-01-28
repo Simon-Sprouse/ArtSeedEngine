@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import './Range.css';
 
-function CustomRange({ min, max, lBound, rBound, pos, onChange }) {
+import CustomRangeMenu from './CustomRangeMenu';
+
+function CustomRange({ oscilators, dimension, min, max, lBound, rBound, pos, handleChange }) {
+
+    // dimensions a string like "xPos", "size" etc
 
     const [dragging, setDragging] = useState(null);
     const [sliderRect, setSliderRect] = useState(null);
@@ -37,20 +41,20 @@ function CustomRange({ min, max, lBound, rBound, pos, onChange }) {
         if (dragging === "lBound") {
 
             const newLBound = Math.min(Math.max(newValue, min), rBound - 1);
-            onChange("lBound", newLBound);
-            onChange("pos", Math.max(pos, newLBound));
+            handleChange("settings", dimension, "lBound", newLBound);
+            handleChange("settings", dimension, "pos", Math.max(pos, newLBound));
 
         } else if (dragging === "rBound") {
 
             const newRBound = Math.max(Math.min(newValue, max), lBound + 1);
-            onChange("rBound", newRBound);
-            onChange("pos", Math.min(pos, newRBound));
+            handleChange("settings", dimension, "rBound", newRBound);
+            handleChange("settings", dimension, "pos", Math.min(pos, newRBound));
 
 
         } else if (dragging === "pos") {
 
             const newPos = Math.max(Math.min(newValue, rBound), lBound);
-            onChange("pos", newPos);
+            handleChange("settings", dimension, "pos", newPos);
 
         }
     }
@@ -76,42 +80,49 @@ function CustomRange({ min, max, lBound, rBound, pos, onChange }) {
     }
 
     return (
-        <div className="slider-container">
-            <div className="slider-track">
+        <div>
+            <div className="slider-container">
+                <div className="slider-track">
 
-                {/* lBound thumb */}
-                <div
-                    className="thumb lBound"
-                    style={{ left: `${calculatePosition(lBound)}%` }}
-                    onMouseDown={(event) => handleMouseDown('lBound', event)}
-                >
-                    <div className="thumb-value">
-                        {Math.round(lBound)}
+                    {/* lBound thumb */}
+                    <div
+                        className="thumb lBound"
+                        style={{ left: `${calculatePosition(lBound)}%` }}
+                        onMouseDown={(event) => handleMouseDown('lBound', event)}
+                    >
+                        <div className="thumb-value">
+                            {Math.round(lBound)}
+                        </div>
                     </div>
-                </div>
 
-                {/* rBound thumb */}
-                <div
-                    className="thumb rBound"
-                    style={{ left: `${calculatePosition(rBound)}%` }}
-                    onMouseDown={(event) => handleMouseDown('rBound', event)}
-                >
-                    <div className="thumb-value">
-                        {Math.round(rBound)}
+                    {/* rBound thumb */}
+                    <div
+                        className="thumb rBound"
+                        style={{ left: `${calculatePosition(rBound)}%` }}
+                        onMouseDown={(event) => handleMouseDown('rBound', event)}
+                    >
+                        <div className="thumb-value">
+                            {Math.round(rBound)}
+                        </div>
                     </div>
-                </div>
 
-                {/* pos thumb */}
-                <div
-                    className="thumb pos"
-                    style={{ left: `${calculatePosition(pos)}%` }}
-                    onMouseDown={(event) => handleMouseDown('pos', event)}
-                >
-                    <div className="thumb-value">
-                        {Math.round(pos)}
+                    {/* pos thumb */}
+                    <div
+                        className="thumb pos"
+                        style={{ left: `${calculatePosition(pos)}%` }}
+                        onMouseDown={(event) => handleMouseDown('pos', event)}
+                    >
+                        <div className="thumb-value">
+                            {Math.round(pos)}
+                        </div>
                     </div>
                 </div>
             </div>
+
+
+            <CustomRangeMenu dimension={dimension} oscilators={oscilators} handleChange={handleChange}/>
+
+
         </div>
     );
 }

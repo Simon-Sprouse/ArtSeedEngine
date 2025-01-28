@@ -38,6 +38,7 @@ function App() {
             </div>
             
             <div className="main-content">
+                <button onClick={() => console.log("Parameters: ", JSON.stringify(parameters, null, 2))}>Parameters</button>
                 <Canvas parameters={parameters}/>
                 <Metronome parameters={parameters} setParameters={setParameters}/>
 
@@ -50,7 +51,7 @@ function App() {
                 <h1>SEED</h1>
                 <p>{parameters.engine}</p>
                 {Object.entries(parameters.settings).map(([key, values]) => (
-                    <p>
+                    <p key={key}>
                         {key + " "} 
                         {values.lBound + " "}
                         {values.rBound + " "}
@@ -58,11 +59,11 @@ function App() {
                     </p>
                 ))}
                 {Object.entries(parameters.oscilators).map(([key, values]) => (
-                    <p>
+                    <p key={key}>
                         {key + " "} 
                         {values.type + " "}
                         {values.step + " "}
-                        {JSON.stringify(values.attatchedTo, null,  2)}
+                        {JSON.stringify(values.attachedTo, null,  2)}
                     </p>
                 ))}
 
@@ -70,10 +71,10 @@ function App() {
                 {/* STATE */}
                 <h1>STATE</h1>
                 {Object.entries(parameters.settings).map(([key, values]) => (
-                    <p>{key}: {values.pos}</p>
+                    <p key={key}>{key}: {values.pos}</p>
                 ))}
                 {Object.entries(parameters.oscilators).map(([key, values]) => (
-                    <p>{key}: {values.pos}</p>
+                    <p key={key}>{key}: {values.pos}</p>
                 ))}
 
 

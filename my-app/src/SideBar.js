@@ -19,20 +19,21 @@ function SideBar({ parameters, handleChange }) {
                 // dimensions: xPos, yPos, size ...
                 // traits: {input, min, max, lBound, rBound, pos, ... scale ... }
 
-
-                console.log("Rendering dimension:", dimension);
                 if (traits.input == "CustomRange") { 
                     return (
                         <div key={dimension} className="range-item">
                             <p>{dimension}</p>
                             <CustomRange 
+                                oscilators={parameters.oscilators}
+                                dimension={dimension}
                                 min={traits.min}
                                 max={traits.max}
                                 lBound={traits.lBound}
                                 rBound={traits.rBound}
                                 pos={traits.pos}
-                                onChange={(trait, newValue) => handleChange("settings", dimension, trait, newValue)} // trait: lBound
+                                handleChange={handleChange} // trait: lBound
                             />
+
                         </div>
                     )
                 }
@@ -46,7 +47,6 @@ function SideBar({ parameters, handleChange }) {
                 // oscilators: A, B ...
                 // traits: {type, step, attachedTo, ... pos ... }
 
-                console.log("Rendering oscillator:", oscilator);
                 // no if statement, I can assume all oscilators use the same component
                 return (
                     <div key={oscilator} className="range-item">
@@ -55,6 +55,7 @@ function SideBar({ parameters, handleChange }) {
                             pos={traits.pos}
                             onChange={(trait, newValue) => handleChange("oscilators", oscilator, trait, newValue)} // trait: lBound
                         />
+
                     </div>
                 )
 
