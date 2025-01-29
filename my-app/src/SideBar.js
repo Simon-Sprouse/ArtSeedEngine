@@ -31,7 +31,7 @@ function SideBar({ parameters, handleChange }) {
                                 lBound={traits.lBound}
                                 rBound={traits.rBound}
                                 pos={traits.pos}
-                                handleChange={handleChange} // trait: lBound
+                                handleChange={handleChange} 
                             />
 
                         </div>
