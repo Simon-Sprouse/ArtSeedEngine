@@ -51,6 +51,6 @@
         }
     },
     "render": {
-        "frequency": 1
+        "frequency": 30
     }
 }
