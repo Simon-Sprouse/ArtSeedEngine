@@ -4,101 +4,81 @@ import CircularQueue from './CircularQueue';
 
 function Metronome({ parameters, setParameters }) { 
 
-    const [frequency, setFrequency] = useState(parameters.render.frequency);
-    const intervalRef = useRef(null);
 
+    // state controls UI input, ref is for the animation loop
+    const [frequency, setFrequency] = useState(parameters.render.frequency);
+    const frequencyRef = useRef(parameters.render.frequency);
+
+    // for animation loop
+    const intervalRef = useRef(null);
     const lastFrameTimeRef = useRef(0);
     const accumulatedTimeRef = useRef(0);
-    
+    const [pulseCount, setPulseCount] = useState(0);
 
+    // for data storage
     const capacity = 100000
     const qRef = useRef(new CircularQueue(capacity));
 
-    const [pulseCount, setPulseCount] = useState(0);
 
+    
 
+    // loop function - will be called at async frequency
     function animate(callTime) { 
 
-        
-        if (lastFrameTimeRef.current == 0) { 
-            lastFrameTimeRef.current = callTime;
-        }
-    
         const elpased = callTime - lastFrameTimeRef.current;
         lastFrameTimeRef.current = callTime;
-
-
         accumulatedTimeRef.current += elpased;
 
-        const pulseInterval = 1000 / frequency;
+        const pulseInterval = 1000 / frequencyRef.current;
         const numPulses = Math.floor(accumulatedTimeRef.current / pulseInterval);
 
-        if (numPulses > 0) { 
-            for (let i = 0; i < numPulses; i++) { 
-                pulse();
-            }
-            accumulatedTimeRef.current -= numPulses * pulseInterval;
-        }
-
+        pulse(numPulses);
+        accumulatedTimeRef.current -= numPulses * pulseInterval;
 
         // summon next frame
         intervalRef.current = requestAnimationFrame(animate);
 
-
-
-
-
-
     }
 
+    // run multiple pulses
+    function pulse(numPulses) { 
 
-    function pulse() { 
+        let localParameters = { ... parameters };
+
+        for (let i = 0; i < numPulses; i++) { 
+            localParameters = pulseHelper(localParameters);
+        }
+        setParameters(localParameters);
+        setPulseCount(prev => prev + numPulses);
+        
+    }
+
+    // run a single pulse
+    function pulseHelper(localParameters) { 
        
+        const newParameters = { ... localParameters }
 
+        for (const [key, value] of Object.entries(localParameters.oscilators)) { 
+            const newOscilatorPos = (value.pos + value.step) % 100;
+            newParameters["oscilators"][key].pos = newOscilatorPos;
 
-
-        // deep copy
-        const newParameters = { ...parameters };
-
-        for (const [oscilator, traits] of Object.entries(parameters.oscilators)) { 
-            const newOscilatorPos = (traits.pos + traits.step) % 100;
-            newParameters["oscilators"][oscilator].pos = newOscilatorPos;
-
-            for (const dimension of traits.attachedTo) { 
-                const settingTraits = newParameters["settings"][dimension];
+            for (const setting of value.attachedTo) { 
+                const settingTraits = newParameters["settings"][setting];
                 if (!settingTraits) continue;
 
                 const range = settingTraits.rBound - settingTraits.lBound;
                 const scaledPos = settingTraits.lBound + (newOscilatorPos / 100) * range;
-                newParameters["settings"][dimension].pos = scaledPos;
+                newParameters["settings"][setting].pos = scaledPos;
             }
         }
-
-        setParameters(newParameters);
-
-
-
-
 
         const q = qRef.current;
         q.addState(getStateFromParameters());
 
-        setPulseCount(prev => prev + 1);
-
+        return newParameters;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    // separate the state from seed and render
     function getStateFromParameters() { 
         const state = {}
         for (const [key, value] of Object.entries(parameters.settings)) { 
@@ -118,9 +98,9 @@ function Metronome({ parameters, setParameters }) {
 
 
 
-
     function startMetronome() { 
         if (intervalRef.current) return;
+        lastFrameTimeRef.current = performance.now();
         intervalRef.current = requestAnimationFrame(animate);
         
     }
@@ -133,10 +113,11 @@ function Metronome({ parameters, setParameters }) {
         accumulatedTimeRef.current = 0; // don't render leftover frames
     }
 
-
     function handleFrequencyChange(event) { 
         const newFrequency = Number(event.target.value);
+        frequencyRef.current = newFrequency;
         setFrequency(newFrequency);
+
     }
 
 
@@ -147,7 +128,7 @@ function Metronome({ parameters, setParameters }) {
             <h1>Metronome</h1>
             <button onClick={startMetronome}>Play</button>
             <button onClick={stopMetronome}>Pause</button>
-            <button onClick={pulse}>Pulse</button>
+            <button onClick={() => {pulse(1)}}>Pulse</button>
 
             <div>
                 <label>Frequency (Hz): {frequency}
