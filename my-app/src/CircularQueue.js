@@ -7,6 +7,7 @@ class CircularQueue {
         this.maxOnScreen = 100; // max distance between start and end
         this.start = 0;
         this.end = 0;
+        this.total = 0;
     }
 
     getIndex(index) { 
@@ -16,6 +17,7 @@ class CircularQueue {
     addState(state) { 
         this.buffer[this.getIndex(this.end)] = structuredClone(state);
         this.end++;
+        this.total++;
         
         this.totalOnScreen = this.end - this.start;
 
@@ -43,10 +45,30 @@ class CircularQueue {
         if (this.start > 0) { 
             this.start--;
         }
+
+        // need to return the last state in q
+        return this.buffer[this.getIndex(this.end)];
     }
 
     redo() { 
-        // Not sure how to do this. 
+
+        // still incomplete
+
+
+        // if catching up
+        if (this.end < this.total) { 
+            this.start++;
+            this.end++
+        }
+
+        // 
+
+
+
+
+
+
+
     }
 
     clear() { 

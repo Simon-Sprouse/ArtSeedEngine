@@ -20,7 +20,7 @@ function Metronome({ parameters, setParameters }) {
     const qRef = useRef(new CircularQueue(capacity));
 
 
-    
+
 
     // loop function - will be called at async frequency
     function animate(callTime) { 
@@ -32,7 +32,7 @@ function Metronome({ parameters, setParameters }) {
         const pulseInterval = 1000 / frequencyRef.current;
         const numPulses = Math.floor(accumulatedTimeRef.current / pulseInterval);
 
-        pulse(numPulses);
+        pulseMultiple(numPulses);
         accumulatedTimeRef.current -= numPulses * pulseInterval;
 
         // summon next frame
@@ -41,20 +41,24 @@ function Metronome({ parameters, setParameters }) {
     }
 
     // run multiple pulses
-    function pulse(numPulses) { 
+    function pulseMultiple(numPulses) { 
 
         let localParameters = { ... parameters };
 
         for (let i = 0; i < numPulses; i++) { 
-            localParameters = pulseHelper(localParameters);
+            localParameters = pulse(localParameters);
         }
+
+        console.log("local params from pulse: ", localParameters);
+
         setParameters(localParameters);
         setPulseCount(prev => prev + numPulses);
         
     }
 
     // run a single pulse
-    function pulseHelper(localParameters) { 
+    function pulse(localParameters) { 
+
        
         const newParameters = { ... localParameters }
 
@@ -80,18 +84,74 @@ function Metronome({ parameters, setParameters }) {
 
     // separate the state from seed and render
     function getStateFromParameters() { 
-        const state = {}
+        const state = {
+            settings: {},
+            oscilators: {}
+        }
         for (const [key, value] of Object.entries(parameters.settings)) { 
             // key: xPos
             // value: {pos, lbound ...}
-            state[key] = value.pos;
+            state["settings"][key] = value.pos;
         }
         for (const [key, value] of Object.entries(parameters.oscilators)) { 
-            state[key] = value.pos;
+            state["oscilators"][key] = value.pos;
         }
         // console.log("state: ", state);
         return state;
     }
+
+
+    
+
+    function undo() { 
+
+        // take the 2nd-to-last state from queue
+        const q = qRef.current; 
+        const lastState = q.undo();
+
+        // use saved state to adjust positions
+        const newParameters = getParametersFromState(lastState);
+        setPulseCount(prev => prev - 1);
+        setParameters(newParameters);
+
+    }
+
+    function getParametersFromState(state) { 
+
+        const settings = JSON.parse(JSON.stringify(parameters.settings));
+        const oscilators = JSON.parse(JSON.stringify(parameters.oscilators));
+
+
+        for (const [key, value] of Object.entries(state.settings)) { 
+           settings[key].pos = value
+        }
+        for (const [key, value] of Object.entries(state.oscilators)) { 
+            oscilators[key].pos = value
+        }
+
+        const newParameters = {
+            ...parameters,
+            settings: settings, 
+            oscilators: oscilators
+        }
+
+
+        return newParameters;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -113,6 +173,12 @@ function Metronome({ parameters, setParameters }) {
         accumulatedTimeRef.current = 0; // don't render leftover frames
     }
 
+
+    // i'll probably have to edit stopMetronome as well. 
+    function reverseMetronome() { 
+
+    }
+
     function handleFrequencyChange(event) { 
         const newFrequency = Number(event.target.value);
         frequencyRef.current = newFrequency;
@@ -124,11 +190,14 @@ function Metronome({ parameters, setParameters }) {
 
     return (
         <div>
-            <p>Pulse Count: {pulseCount}</p>
             <h1>Metronome</h1>
+            
+            
             <button onClick={startMetronome}>Play</button>
             <button onClick={stopMetronome}>Pause</button>
-            <button onClick={() => {pulse(1)}}>Pulse</button>
+            <button onClick={() => {pulseMultiple(1)}}>Pulse</button>
+            <button onClick={() => {undo()}}>Undo</button>
+
 
             <div>
                 <label>Frequency (Hz): {frequency}
@@ -143,6 +212,7 @@ function Metronome({ parameters, setParameters }) {
 
             </div>
 
+            <p>Pulse Count: {pulseCount}</p>
             <button onClick={() => {console.log(qRef.current.getOnScreen())}}>Test OnScreen</button>
             <button onClick={() => {console.log(getStateFromParameters())}}>Get State</button>
 
