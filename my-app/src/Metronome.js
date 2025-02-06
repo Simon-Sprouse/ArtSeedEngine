@@ -15,48 +15,53 @@ function Metronome({ parameters, setParameters }) {
     const accumulatedTimeRef = useRef(0);
     const [pulseCount, setPulseCount] = useState(0);
 
-    // for data storage
+    // for circular queue
     const capacity = 100000
     const qRef = useRef(new CircularQueue(capacity));
 
 
+    /*
+        FORWARD ANIMATION LOOP
+        ----------------------
+
+        function: getStateFromParameters
+            - separates the state from the parameters
+
+        function: pulse
+            - the atomic unit
+            - moves the oscilators
+            - calls getStateFromParameters
+            - saves the current state in Q
+
+        function: pulseMultiple
+            - stores local parameters
+            - calls pulse k times
+
+        function: Animate:
+            - maintains time accumulator
+            - calculates num pulses for this animation loop
+            - calls for a render 
+    */
 
 
-    // loop function - will be called at async frequency
-    function animate(callTime) { 
-
-        const elpased = callTime - lastFrameTimeRef.current;
-        lastFrameTimeRef.current = callTime;
-        accumulatedTimeRef.current += elpased;
-
-        const pulseInterval = 1000 / frequencyRef.current;
-        const numPulses = Math.floor(accumulatedTimeRef.current / pulseInterval);
-
-        pulseMultiple(numPulses);
-        accumulatedTimeRef.current -= numPulses * pulseInterval;
-
-        // summon next frame
-        intervalRef.current = requestAnimationFrame(animate);
-
-    }
-
-    // run multiple pulses
-    function pulseMultiple(numPulses) { 
-
-        let localParameters = { ... parameters };
-
-        for (let i = 0; i < numPulses; i++) { 
-            localParameters = pulse(localParameters);
+    function getStateFromParameters() { 
+        const state = {
+            settings: {},
+            oscilators: {}
         }
-
-        console.log("local params from pulse: ", localParameters);
-
-        setParameters(localParameters);
-        setPulseCount(prev => prev + numPulses);
-        
+        for (const [key, value] of Object.entries(parameters.settings)) { 
+            // key: xPos
+            // value: {pos, lbound ...}
+            state["settings"][key] = value.pos;
+        }
+        for (const [key, value] of Object.entries(parameters.oscilators)) { 
+            state["oscilators"][key] = value.pos;
+        }
+        // console.log("state: ", state);
+        return state;
     }
+    
 
-    // run a single pulse
     function pulse(localParameters) { 
 
        
@@ -82,39 +87,71 @@ function Metronome({ parameters, setParameters }) {
         return newParameters;
     }
 
-    // separate the state from seed and render
-    function getStateFromParameters() { 
-        const state = {
-            settings: {},
-            oscilators: {}
-        }
-        for (const [key, value] of Object.entries(parameters.settings)) { 
-            // key: xPos
-            // value: {pos, lbound ...}
-            state["settings"][key] = value.pos;
-        }
-        for (const [key, value] of Object.entries(parameters.oscilators)) { 
-            state["oscilators"][key] = value.pos;
-        }
-        // console.log("state: ", state);
-        return state;
-    }
-
-
     
+    function pulseMultiple(numPulses) { 
 
-    function undo() { 
+        let localParameters = { ... parameters };
 
-        // take the 2nd-to-last state from queue
-        const q = qRef.current; 
-        const lastState = q.undo();
+        for (let i = 0; i < numPulses; i++) { 
+            localParameters = pulse(localParameters);
+        }
 
-        // use saved state to adjust positions
-        const newParameters = getParametersFromState(lastState);
-        setPulseCount(prev => prev - 1);
-        setParameters(newParameters);
+        setParameters(localParameters);
+        setPulseCount(prev => prev + numPulses);
+        
+    }
+
+
+    function animate(callTime) { 
+
+        const elpased = callTime - lastFrameTimeRef.current;
+        lastFrameTimeRef.current = callTime;
+        accumulatedTimeRef.current += elpased;
+
+        const pulseInterval = 1000 / frequencyRef.current;
+        const numPulses = Math.floor(accumulatedTimeRef.current / pulseInterval);
+
+        pulseMultiple(numPulses);
+        accumulatedTimeRef.current -= numPulses * pulseInterval;
+
+
+        // TODO: Call the rendering function!!!
+
+
+
+
+
+
+
+        // summon next frame
+        intervalRef.current = requestAnimationFrame(animate);
 
     }
+
+
+
+
+
+
+
+    /*
+        BACKWARD ANIMATION LOOP
+        ----------------------
+
+        function: getParametersFromState
+            - builds parameters with updated state
+
+        function: undoMultiple
+            - moves Q pointers back k elements
+            - gets last state from Q
+            - calls getParametersFromState
+
+        function: animateReverse:
+            - maintains time accumulator
+            - calculates num undos for this animation loop
+            - calls for a render 
+    */
+
 
     function getParametersFromState(state) { 
 
@@ -123,7 +160,7 @@ function Metronome({ parameters, setParameters }) {
 
 
         for (const [key, value] of Object.entries(state.settings)) { 
-           settings[key].pos = value
+            settings[key].pos = value
         }
         for (const [key, value] of Object.entries(state.oscilators)) { 
             oscilators[key].pos = value
@@ -135,10 +172,48 @@ function Metronome({ parameters, setParameters }) {
             oscilators: oscilators
         }
 
-
         return newParameters;
 
+    }
 
+    function undoMultiple(numUndos) { 
+
+        // take the 2nd-to-last state from queue
+        const q = qRef.current; 
+        const lastState = q.undoMultiple(numUndos);
+
+        // use saved state to adjust positions
+        const newParameters = getParametersFromState(lastState);
+        setPulseCount(prev => Math.max(0, prev - numUndos));
+        setParameters(newParameters);
+
+    }
+
+
+    function animateReverse(callTime) { 
+        
+
+        const elpased = callTime - lastFrameTimeRef.current;
+        lastFrameTimeRef.current = callTime;
+        accumulatedTimeRef.current += elpased;
+
+        const pulseInterval = 1000 / frequencyRef.current;
+        const numPulses = Math.floor(accumulatedTimeRef.current / pulseInterval);
+
+        undoMultiple(numPulses);
+        accumulatedTimeRef.current -= numPulses * pulseInterval;
+
+
+        // TODO: Call the rendering function!!!
+
+
+
+
+
+
+
+        // summon next frame
+        intervalRef.current = requestAnimationFrame(animateReverse);
 
     }
 
@@ -158,26 +233,44 @@ function Metronome({ parameters, setParameters }) {
 
 
 
+
+
+
+
+    // called by start, stop, and reverse
+    function clearInterval() { 
+        if (intervalRef.current) { 
+            cancelAnimationFrame(intervalRef.current);
+            intervalRef.current = null;
+        }
+    }
+
+
+
     function startMetronome() { 
-        if (intervalRef.current) return;
+
+        clearInterval();
         lastFrameTimeRef.current = performance.now();
         intervalRef.current = requestAnimationFrame(animate);
         
     }
 
     function stopMetronome() { 
-        if (intervalRef.current) { 
-            cancelAnimationFrame(intervalRef.current);
-            intervalRef.current = null;
-        }
+        
+        clearInterval();
         accumulatedTimeRef.current = 0; // don't render leftover frames
     }
 
 
-    // i'll probably have to edit stopMetronome as well. 
     function reverseMetronome() { 
 
+        clearInterval();
+        lastFrameTimeRef.current = performance.now();
+        intervalRef.current = requestAnimationFrame(animateReverse);
+
     }
+
+
 
     function handleFrequencyChange(event) { 
         const newFrequency = Number(event.target.value);
@@ -195,8 +288,9 @@ function Metronome({ parameters, setParameters }) {
             
             <button onClick={startMetronome}>Play</button>
             <button onClick={stopMetronome}>Pause</button>
+            <button onClick={reverseMetronome}>Reverse</button>
             <button onClick={() => {pulseMultiple(1)}}>Pulse</button>
-            <button onClick={() => {undo()}}>Undo</button>
+            <button onClick={() => {undoMultiple(1)}}>Undo</button>
 
 
             <div>

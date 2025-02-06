@@ -50,6 +50,21 @@ class CircularQueue {
         return this.buffer[this.getIndex(this.end)];
     }
 
+    undoMultiple(n) { 
+
+        this.end = Math.max(0, this.end - n);
+        this.start = Math.max(0, this.start - n);
+
+        return this.buffer[this.getIndex(this.end)];
+
+    }
+
+
+
+
+
+
+
     redo() { 
 
         // still incomplete
